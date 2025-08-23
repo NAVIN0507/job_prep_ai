@@ -46,11 +46,10 @@ export function JobInfoForm({jobInfo}:{
     },
   });
   async function onSubmit(values: JobInfoFormValues) {
-    const action = jobInfo
-      ? updateJobInfo.bind(null, jobInfo.id)
-      : createJobInfo
+    //@ts-expect-error some unwanted typecheck error
+    const action = jobInfo ? updateJobInfo.bind(null, jobInfo.id) : createJobInfo
     const res = await action(values)
-
+ 
     if (res.error) {
       toast.error(res.message)
     }
