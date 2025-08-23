@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { UsersTable } from "@/drizzle/schema";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { getUserIdTag } from "@/features/users/dbCache";
-export async function getCurrentUser({allData= false}){
+export async function getCurrentUser({allData= false}={}){
   const {userId , redirectToSignIn} = await auth();
   return {
 userId,

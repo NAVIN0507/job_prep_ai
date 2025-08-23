@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Outfit } from "next/font/google";
 import "./globals.css";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { Toaster } from "@/components/ui/sonner";
 
 const outfitSans = Outfit({
   variable: "--font-outfit-sans",
@@ -32,7 +32,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             {children}
-           
+            <Toaster/>
           </ThemeProvider>
         </body>
       </html>
