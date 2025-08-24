@@ -47,7 +47,7 @@ async function JobInfos(){
     </div>
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {jobInfos.map((jobInfo)=>(
-        <Link className="hover:scale-[1.02] transition-transform" href={`/app/job-info/${jobInfo.id}`} key={jobInfo.id}>
+        <Link className="hover:scale-[1.02] transition-transform" href={`/app/job-infos/${jobInfo.id}`} key={jobInfo.id}>
           <Card className="h-full">
             <div className="flex items-center justify-between h-full">
               <div className="space-y-4 h-full ">
