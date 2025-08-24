@@ -1,5 +1,4 @@
 "use client";
-
 import { experienceLevel, JobInfoTable } from "@/drizzle/schema/jobinfo";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form"
