@@ -9,7 +9,7 @@ import { getJobInfoIdTag } from "@/features/jobinfos/dbCache";
 import { formateExperienceLevel } from "@/features/jobinfos/lib/formatters";
 import { getCurrentUser } from "@/services/clerk/lib/getCurrentUser";
 import { and, eq } from "drizzle-orm";
-import { ArrowRight, PlusIcon } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -20,7 +20,7 @@ const options =  [
     href:"questions"
   },
   {
-    label:"Practive Interviewing",
+    label:"Practice Interviewing",
     description:"Simulate a real interview eith AI-powered mock interviwes.",
     href:"interviews"
   },
