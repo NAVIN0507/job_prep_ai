@@ -1,4 +1,5 @@
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { PricingTable } from "@/services/clerk/components/PricingTable";
 import { SignInButton, UserButton } from "@clerk/nextjs";
 const page = () => {
   return (
@@ -8,6 +9,7 @@ const page = () => {
         <UserButton />
         <ThemeToggle />
       </div>
+      <PricingTable/>
     </div>
   );
 };
