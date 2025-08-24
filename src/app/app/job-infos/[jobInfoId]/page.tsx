@@ -75,7 +75,7 @@ export default async function JobInfoPage({params}:{params:Promise<{jobInfoId:st
       </div>
        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {options.map((option)=>(
-        <Link className="hover:scale-[1.02] transition-transform" href={`/app/job-info/${jobInfoId}/${option.href}`} key={option.label}>
+        <Link className="hover:scale-[1.02] transition-transform" href={`/app/job-infos/${jobInfoId}/${option.href}`} key={option.label}>
           <Card className="h-full flex items-start justify-between flex-row">
                 <CardHeader className="flex-grow">
                   <CardTitle>

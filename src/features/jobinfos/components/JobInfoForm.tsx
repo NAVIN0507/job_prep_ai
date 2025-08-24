@@ -143,7 +143,9 @@ export function JobInfoForm({jobInfo}:{
           )}
         />
 
-        <Button type="submit" disabled={form.formState.isSubmitting} className="w-full">Save Job Information</Button>
+        <Button type="submit" disabled={form.formState.isSubmitting} className="w-full">
+          {jobInfo ? "Update Job Description" : "Save Job Description"}
+          </Button>
       </form>
     </Form>
   );
