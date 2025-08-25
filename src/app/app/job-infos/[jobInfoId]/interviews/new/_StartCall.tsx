@@ -6,6 +6,8 @@ import { useVoice, VoiceReadyState } from "@humeai/voice-react";
 import { Loader2Icon, MicIcon, MicOffIcon, PhoneOffIcon } from "lucide-react";
 import { env } from "@/data/env/client";
 import { useMemo } from "react";
+import { condenseChatMessages } from "@/services/hume/lib/condensedChatMessages";
+import { CondensedMessages } from "@/services/hume/lib/components/CondensedMessages";
 export function StartCall({
   jobInfo,
   accessToken,
@@ -64,7 +66,7 @@ export function StartCall({
 function Messages({ user }: { user: { name: string; imageUrl: string } }) {
   const {messages , fft}  = useVoice();
   const condensedMessages = useMemo(()=>{
-    return condensedChatMessages(messages)
+    return condenseChatMessages(messages)
   } , [messages])
   return <CondensedMessages  messages={condensedMessages} user={user} maxFft={Math.max(...fft)}/>
 }
