@@ -15,7 +15,7 @@ export default async function NewInterviewPage({params}:{params:Promise<{jobInfo
   const {jobInfoId}  =await params
   return(
     <Suspense fallback={
-      <div className="h-screen-header flex items-center justify-center">
+      <div className="h-screen-header flex items-center justify-center my-auto">
         <Loader2Icon className="animate-spin size-24"/>
       </div>
     }>
@@ -25,6 +25,7 @@ export default async function NewInterviewPage({params}:{params:Promise<{jobInfo
 }
 
 async function SuspendedComponent({jobInfoId}:{jobInfoId:string}){
+  
   const {userId , redirectToSignIn , user}  =await getCurrentUser({allData:true})
   if(userId==null || user==null) return redirectToSignIn();
   const jobInfo = await getJobInfo(jobInfoId , userId);
@@ -33,10 +34,10 @@ async function SuspendedComponent({jobInfoId}:{jobInfoId:string}){
     apiKey: env.HUME_API_KEY,
     secretKey: env.HUME_SECRET_KEY
   });
-  console.log(accessToken)
-  // return <VoiceProvider>
-  //   <StartCall jobInfo={jobInfo} accessToken={accessToken} user={user}/>
-  // </VoiceProvider>
+  
+  return <VoiceProvider>
+    <StartCall jobInfo={jobInfo} accessToken={accessToken} user={user}/>
+  </VoiceProvider>
 }
 
 async function getJobInfo(id:string , userId:string){
