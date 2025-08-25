@@ -10,6 +10,8 @@ export const env = createEnv({
     DB_PORT: z.string().min(1, "DB_PORT is required"),
     DB_NAME: z.string().min(1, "DB_NAME is required"),
     CLERK_SECRET_KEY: z.string().min(1, "CLERK_SECRET_KEY is required"),
+    HUME_API_KEY:z.string().min(1 , "HUME_API_KEY"),
+    HUME_SECRET_KEY:z.string().min(1 , "HUME_SECRET_KEY")
   },
   createFinalSchema:env=>{
     return z.object(env).transform(val=>{
