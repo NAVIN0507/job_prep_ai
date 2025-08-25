@@ -10,7 +10,7 @@ export function getInterviewJobInfoTag(jobInfoId:string){
 export function getInterviewIdTag(id:string){
   return getIdTag("interviews" , id)
 }
-export function revalidateJobInfoCache({id , jobInfoId}:{id:string;jobInfoId:string}){
+export function revalidateInterviewCache({id , jobInfoId}:{id:string;jobInfoId:string}){
 revalidateTag(getInterviewGlobalTag())
 revalidateTag(getInterviewJobInfoTag(jobInfoId))
 revalidateTag(getInterviewIdTag(id))

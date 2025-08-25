@@ -5,9 +5,11 @@ import { JobInfoTable } from "@/drizzle/schema";
 import { useVoice, VoiceReadyState } from "@humeai/voice-react";
 import { Loader2Icon, MicIcon, MicOffIcon, PhoneOffIcon } from "lucide-react";
 import { env } from "@/data/env/client";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { condenseChatMessages } from "@/services/hume/lib/condensedChatMessages";
 import { CondensedMessages } from "@/services/hume/lib/components/CondensedMessages";
+import { createInterview, updateInterview } from "@/features/interviews/actions";
+import { errorToast } from "@/lib/errortoast";
 export function StartCall({
   jobInfo,
   accessToken,
@@ -20,11 +22,32 @@ export function StartCall({
   accessToken: string;
   user: { name: string; imageUrl: string };
 }) {
-  console.log(accessToken);
-  const { connect, readyState,  } = useVoice();
+  const { connect, readyState,  chatMetadata , callDurationTimestamp} = useVoice();
+  const [interviewId, setinterviewId] = useState<string | null>(null);
+  const durationRef = useRef(callDurationTimestamp);
+  durationRef.current  = callDurationTimestamp
+  useEffect(()=>{
+    if(chatMetadata?.chatId == null  || interviewId ==null){
+      return
+    }
+    updateInterview(interviewId , {humeChatId:chatMetadata.chatId})
+  } , [chatMetadata?.chatId , interviewId])
+  useEffect(()=>{
+    if(interviewId==null) return;
+    const intervalId = setInterval(()=>{
+      if(durationRef.current==null) return;
+      updateInterview(interviewId , {duration:durationRef.current})
+    } , 100000)
+  },[interviewId , callDurationTimestamp])
   if(readyState === VoiceReadyState.IDLE){
     return <div className="min- h-[calc(100vh-4rem)] flex items-center justify-center">
       <Button size="lg" onClick={async()=>{
+        //@ts-expect-error some 
+        const res = await createInterview({jobInfoId :jobInfo.id});
+        if(res.error){
+          return errorToast(res.message)
+        }
+        setinterviewId(res.id)
         connect({
           auth: { type: "accessToken", value: accessToken },
           configId:env.NEXT_PUBLIC_HUME_CONFIG_ID,
