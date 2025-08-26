@@ -41,7 +41,7 @@ export function Navbar({ user }: { user: { name: string; imageUrl: string } }) {
         </Link>
 
         <div className="flex items-center gap-4">
-          {/* {typeof jobInfoId === "string" &&
+          {typeof jobInfoId === "string" &&
             navLinks.map(({ name, href, Icon }) => {
               const hrefPath = `/app/job-infos/${jobInfoId}/${href}`
 
@@ -58,7 +58,7 @@ export function Navbar({ user }: { user: { name: string; imageUrl: string } }) {
                   </Link>
                 </Button>
               )
-            })} */}
+            })}
 
           <ThemeToggle />
 

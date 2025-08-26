@@ -10,6 +10,7 @@ import { condenseChatMessages } from "@/services/hume/lib/condensedChatMessages"
 import { CondensedMessages } from "@/services/hume/lib/components/CondensedMessages";
 import { createInterview, updateInterview } from "@/features/interviews/actions";
 import { errorToast } from "@/lib/errortoast";
+import { useRouter } from "next/navigation";
 export function StartCall({
   jobInfo,
   accessToken,
@@ -25,20 +26,34 @@ export function StartCall({
   const { connect, readyState,  chatMetadata , callDurationTimestamp} = useVoice();
   const [interviewId, setinterviewId] = useState<string | null>(null);
   const durationRef = useRef(callDurationTimestamp);
+  const router = useRouter();
   durationRef.current  = callDurationTimestamp
+  //
   useEffect(()=>{
     if(chatMetadata?.chatId == null  || interviewId ==null){
       return
     }
     updateInterview(interviewId , {humeChatId:chatMetadata.chatId})
   } , [chatMetadata?.chatId , interviewId])
+  //
   useEffect(()=>{
     if(interviewId==null) return;
     const intervalId = setInterval(()=>{
       if(durationRef.current==null) return;
       updateInterview(interviewId , {duration:durationRef.current})
     } , 100000)
+
+    return () => clearInterval(intervalId)
   },[interviewId , callDurationTimestamp])
+  // handle disconnet
+  useEffect(()=>{
+    if(readyState !== VoiceReadyState.CLOSED) return
+    if(interviewId==null) return router.push(`/app/job-infos/${jobInfo.id}/interviews`)
+    if(durationRef.current!=null){
+      updateInterview(interviewId , {duration:durationRef.current})
+    }
+    router.push(`/app/job-infos/${jobInfo.id}/interviews/${interviewId}`)
+  } , [interviewId , readyState , router , jobInfo.id])
   if(readyState === VoiceReadyState.IDLE){
     return <div className="min- h-[calc(100vh-4rem)] flex items-center justify-center">
       <Button size="lg" onClick={async()=>{
