@@ -40,7 +40,7 @@ async function SuspendedPage({jobInfoId}:{jobInfoId:string}){
       <Button asChild>
         <Link href={`/app/job-infos/${jobInfoId}/interviews/new`}>
         <PlusIcon/>
-        New Interview
+        Create New Interview
         </Link>
       </Button>
     </div>
