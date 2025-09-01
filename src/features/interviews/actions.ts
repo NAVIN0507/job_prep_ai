@@ -9,6 +9,8 @@ import { InterviewTable, JobInfoTable } from "@/drizzle/schema";
 import { insertInterview, updateIntervieDB } from "./db";
 import { getInterviewIdTag } from "./dbCache";
 import { error } from "console";
+import { canCreateInterview } from "./permission";
+import { PLAN_LIMIT_MESSAGE } from "@/lib/errortoast";
 
 export async function createInterview({jobInfoId}:{jobInfoId:string}):Promise<{
   error:true,
@@ -23,6 +25,12 @@ export async function createInterview({jobInfoId}:{jobInfoId:string}):Promise<{
   }
 
   // Permission
+  if(! (await canCreateInterview())){
+    return {
+      error : true,
+      message:PLAN_LIMIT_MESSAGE
+    }
+  }
   // Rate Limit
   // Job Info
   const jobInfo = await getJobInfo(jobInfoId , userId);
