@@ -1,15 +1,23 @@
 import { BackLink } from "@/components/BackLink"
-import { Skeleton } from "@/components/Skeleton"
+import { MarkdownRenderer } from "@/components/MarkdownRendere"
+import { Skeleton, SkeletonButton } from "@/components/Skeleton"
 import { SuspendedItem } from "@/components/SuspandedItem"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogTrigger , DialogTitle} from "@/components/ui/dialog"
 import { db } from "@/drizzle/db"
 import { InterviewTable } from "@/drizzle/schema"
 import { getInterviewIdTag, getInterviewJobInfoTag } from "@/features/interviews/dbCache"
 import { getJobInfoIdTag } from "@/features/jobinfos/dbCache"
 import { formateDateTime } from "@/lib/formatters"
 import { getCurrentUser } from "@/services/clerk/lib/getCurrentUser"
+import { fetchChatMessages } from "@/services/hume/lib/api"
+import { CondensedMessages } from "@/services/hume/lib/components/CondensedMessages"
+import { condenseChatMessages } from "@/services/hume/lib/condensedChatMessages"
 import { and, desc, eq, isNotNull } from "drizzle-orm"
+import { Loader2Icon } from "lucide-react"
 import { cacheTag } from "next/dist/server/use-cache/cache-tag"
 import { notFound } from "next/navigation"
+import { Suspense } from "react"
 
 export default async function InterviewPage({params}:{params:Promise<{jobInfoId:string
   , interviewId:string
@@ -35,19 +43,58 @@ return (
         <div className="space-y-2 mb-6">
           <h1 className="text-3xl md:text-4xl">
             Interview:{" "}
-          </h1>
-          <SuspendedItem
+             <SuspendedItem
           item={interview}
           fallback={<Skeleton className="w-48"/>}
           result={i=>formateDateTime(i.createdAt)}
           />
+          </h1>
+          <p className="text-muted-foreground"> 
+            <SuspendedItem
+            item={interview}
+            fallback={<Skeleton className="w-24"/>}
+            result={i=>i.duration}
+            />
+          </p>
         </div>
+        <SuspendedItem
+        item={interview}
+        fallback={<SkeletonButton className="w-32"/>}
+        result={i=>(
+          i.feedback == null ?  null :   (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button>View Feedback</Button>
+              </DialogTrigger>
+              <DialogContent className="md:max-w-3xl lg:max-w-4xl max-h-[calc(100% -2rem)] overflow-y-auto flex flex-col">
+                <DialogTitle>Feedback</DialogTitle>
+                <MarkdownRenderer>
+                  {i.feedback}
+                </MarkdownRenderer>
+              </DialogContent>
+            </Dialog>
+          ) 
+        )}
+        />
       </div>
+      <Suspense fallback={<Loader2Icon className="animate-spin mx-auto"/>}>
+      <Messages interview={interview}/>
+      </Suspense>
     </div>
   </div>
 )
 }
+async function Messages({interview}:{interview:Promise<{humeChatId:string | null}>}){
+const {user , redirectToSignIn} = await getCurrentUser({allData:true})
+if(user==null) return redirectToSignIn()
+  const {humeChatId} = await interview
+if(humeChatId==null) return notFound();
+const condensedMessages = condenseChatMessages(
+  await fetchChatMessages(humeChatId)
+)
 
+return <CondensedMessages messages={condensedMessages} user={user} className="max-w-5xl mx-auto"/>
+}
 
 async function getInterviews(id:string,userId:string){
   "use cache"
