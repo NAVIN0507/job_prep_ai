@@ -88,7 +88,7 @@ export async function updateInterview(id:string,{humeChatId , duration}:{humeCha
   return {error:false}
   }
 export async function generateInterviewFeedback(interviewId:string){
-  const {userId} = await getCurrentUser()
+  const {userId , user} = await getCurrentUser({allData:true})
   if(userId==null){
     return{
       error:true,
@@ -99,9 +99,22 @@ export async function generateInterviewFeedback(interviewId:string){
   if(interview == null || interview.humeChatId == null){
     return{
       error:true,
-      
+      message:"You dont have permission to do this"   
     }
   }
+  const feedback = await generateAIInterviewFeedback({
+    humeChatId:interview.humeChatId,
+    jobInfo:interview.jobInfo,
+    userName:user?.name
+  })
+  if(feedback==null){
+    return{
+      error:true,
+      message:"Failed to generate feedback"
+    }
+  }
+  await updateIntervieDB(interviewId , {feedback})
+  return {error:false}
 }
 async function getJobInfo(jobInfoId:string, userId:string){
   "use cache"
@@ -119,7 +132,10 @@ async function getInterview(id:string , userId:string){
       jobInfo:{
         columns:{
           id:true,
-          userId:true
+          userId:true,
+          description:true,
+          experienceLevel:true,
+          title:true
         }
       }
     }
