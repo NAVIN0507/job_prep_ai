@@ -63,25 +63,27 @@ return (
         item={interview}
         fallback={<SkeletonButton className="w-32"/>}
         result={i=>(
-          i.feedback == null ?  <ActionButton action={generateInterviewFeedback.bind(null , i.id)}>Generate Feedback</ActionButton> :   (
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button>View Feedback</Button>
-              </DialogTrigger>
-              <DialogContent className="md:max-w-3xl lg:max-w-4xl max-h-[calc(100% -2rem)] overflow-y-auto flex flex-col">
-                <DialogTitle>Feedback</DialogTitle>
-                <MarkdownRenderer>
-                  {i.feedback}
-                </MarkdownRenderer>
-              </DialogContent>
-            </Dialog>
-          ) 
-        )}
+          i.feedback == null &&  <ActionButton action={generateInterviewFeedback.bind(null , i.id)}>Generate Feedback</ActionButton> )}
         />
       </div>
       <Suspense fallback={<Loader2Icon className="animate-spin mx-auto"/>}>
       <Messages interview={interview}/>
       </Suspense>
+    </div>
+    <div className="p-2 flex flex-col gap-4">
+      <h1 className="text-3xl">Feedback : </h1>
+      <div>
+<SuspendedItem
+
+item={interview}
+fallback={<Skeleton className="w-48"/>}
+result={i=>(
+  <MarkdownRenderer>
+                  {i.feedback}
+                </MarkdownRenderer>
+)}
+/>
+      </div>
     </div>
   </div>
 )
