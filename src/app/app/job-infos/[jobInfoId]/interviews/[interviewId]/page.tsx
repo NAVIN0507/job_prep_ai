@@ -1,5 +1,6 @@
 import { BackLink } from "@/components/BackLink"
 import { MarkdownRenderer } from "@/components/MarkdownRendere"
+import { NOFeedBackCard } from "@/components/NOFeedbackCard"
 import { Skeleton, SkeletonButton } from "@/components/Skeleton"
 import { SuspendedItem } from "@/components/SuspandedItem"
 import { ActionButton } from "@/components/ui/action-button"
@@ -78,9 +79,11 @@ return (
 item={interview}
 fallback={<Skeleton className="w-48"/>}
 result={i=>(
-  <MarkdownRenderer>
+  <div>
+    {i.feedback == null ? <NOFeedBackCard interviewId={i.id}/> :  <MarkdownRenderer>
                   {i.feedback}
-                </MarkdownRenderer>
+                </MarkdownRenderer>}
+  </div>
 )}
 />
       </div>
