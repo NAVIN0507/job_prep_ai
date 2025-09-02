@@ -63,7 +63,7 @@ return (
         item={interview}
         fallback={<SkeletonButton className="w-32"/>}
         result={i=>(
-          i.feedback == null ?  <ActionButton action={generateInterviewFeedback}>Generate Feedback</ActionButton> :   (
+          i.feedback == null ?  <ActionButton action={generateInterviewFeedback.bind(null , i.id)}>Generate Feedback</ActionButton> :   (
             <Dialog>
               <DialogTrigger asChild>
                 <Button>View Feedback</Button>

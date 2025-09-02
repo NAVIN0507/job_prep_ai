@@ -12,6 +12,7 @@ import { canCreateInterview } from "./permission";
 import { PLAN_LIMIT_MESSAGE, RATE_LIMIT_MESSAGE } from "@/lib/errortoast";
 import arcjet, { tokenBucket  , request} from "@arcjet/next";
 import { env } from "@/data/env/server";
+import { generateAiInterviewFeedback } from "@/services/ai/interview";
 
 const aj = arcjet({
   characteristics:["userId"],
@@ -102,10 +103,10 @@ export async function generateInterviewFeedback(interviewId:string){
       message:"You dont have permission to do this"   
     }
   }
-  const feedback = await generateAIInterviewFeedback({
+  const feedback = await generateAiInterviewFeedback({
     humeChatId:interview.humeChatId,
     jobInfo:interview.jobInfo,
-    userName:user?.name
+    userName:user?.name || ""
   })
   if(feedback==null){
     return{
