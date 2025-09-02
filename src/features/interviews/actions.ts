@@ -18,8 +18,8 @@ const aj = arcjet({
   key:env.ARCJET_KEY,
   rules:[
     tokenBucket({
-      capacity:1,
-      refillRate:1,
+      capacity:12,
+      refillRate:4,
       interval:"1d",
       mode:"LIVE"
     })
@@ -87,7 +87,22 @@ export async function updateInterview(id:string,{humeChatId , duration}:{humeCha
   await updateIntervieDB(id , {duration,humeChatId})
   return {error:false}
   }
-
+export async function generateInterviewFeedback(interviewId:string){
+  const {userId} = await getCurrentUser()
+  if(userId==null){
+    return{
+      error:true,
+      message:"You don't have permission to do this"
+  }
+  }
+  const interview =  await getInterview(interviewId , userId);
+  if(interview == null || interview.humeChatId == null){
+    return{
+      error:true,
+      
+    }
+  }
+}
 async function getJobInfo(jobInfoId:string, userId:string){
   "use cache"
   cacheTag(getJobInfoIdTag(jobInfoId))
