@@ -9,8 +9,10 @@ import {
 } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
-import { JobInfoTable, questionsDifficulties } from "@/drizzle/schema";
+import {JobInfoTable, questionsDifficulties, QusetionDeficulties} from "@/drizzle/schema";
 import { useState } from "react";
+import {useCompletion} from "@ai-sdk/react"
+import {errorToast} from "@/lib/errortoast";
 type Status  = "awaiting-answer" | "awaiting-defficulties" | "init"
 
 export function NewQuetionsClientPage({
@@ -19,9 +21,26 @@ export function NewQuetionsClientPage({
   jobInfo: Pick<typeof JobInfoTable.$inferSelect, "id" | "name" | "title">;
 }) {
   const [status, setstatus] = useState<Status>("init");
-  const [ answer, setAnswer ] = useState<string | null>(null);
-  const question = null
-  const feedback = null
+  const [ answer, setAnswer ] = useState<string | null>(null)
+    const questionId  = null
+  const {complete:generateQuestion , completion:question , setCompletion:setQuestion , isLoading:isGeneratingQuestion }  = useCompletion({
+      api:"/api/ai/questions/generate-question",
+      onFinish:()=> {
+          setstatus("awaiting-answer")
+      },
+      onError: error=>{
+          errorToast(error.message)
+      }
+  })
+    const {complete:generateFeedback , completion:feedback , setCompletion:setFeedback , isLoading:isGeneratingFeddback }  = useCompletion({
+        api:"/api/ai/questions/generate-feedback",
+        onFinish:()=> {
+            setstatus("awaiting-defficulties")
+        },
+        onError: error=>{
+            errorToast(error.message)
+        }
+    })
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)]">
       <div className="container flex gap-4 py-4 items-center justify-between">
@@ -30,7 +49,23 @@ export function NewQuetionsClientPage({
             {jobInfo.name}
           </BackLink>
         </div>
-        <Controls  status={status}/>
+        <Controls  status={status} isLoading={isGeneratingFeddback || isGeneratingQuestion} generateQuestion={difficulty => {
+            setQuestion("")
+            setAnswer(null)
+            setFeedback("")
+            generateQuestion(difficulty , {body : {jobInfoId: jobInfo.id}})
+        }} generateFeedback={()=>{
+            if(answer==null || answer.trim()==null) return
+            generateFeedback(answer?.trim(), {body:{questionId}})
+        }}
+        reset={()=>{
+            setAnswer(null)
+            setFeedback("")
+            setQuestion("")
+            setstatus("init")
+        }}
+                   disableAnswerButton={answer==null || answer.trim()==null || questionId==null}
+        />
         <div className="flex-grow hidden md:block" />
       </div>
       <div className="flex-1 min-h-0">
@@ -108,16 +143,30 @@ function QuestionContainer(
     </ResizablePanelGroup>
   );
 }
-function Controls({status}:{status:Status}) {
+function Controls({status,reset , isLoading , generateQuestion , generateFeedback , disableAnswerButton}:{status:Status
+    isLoading:boolean,
+    generateQuestion:(difficulty:QusetionDeficulties)=>void
+    generateFeedback:()=>void
+    reset:()=>void
+    disableAnswerButton:boolean
+}) {
 
-  const isLoading = false;
   return (
     <div className="flex  gap-2">
      {status==="awaiting-answer" ? (
-      <button className="btn btn-primary">Submit Answer</button>
+      <>
+      <Button onClick={reset} disabled={isLoading} variant={"outline"} size={"sm"}>
+          Skip
+      </Button>
+          <Button disabled={disableAnswerButton} onClick={generateFeedback}  size={"sm"}>
+              Answer
+          </Button>
+      </>
      ):(
       questionsDifficulties.map((difficulty)=>(
-        <Button className="cursor-pointer"  key={difficulty}  disabled={isLoading} onClick={()=>{}} size="sm">{difficulty.charAt(0).toUpperCase()+difficulty.slice(1)}</Button>
+        <Button className="cursor-pointer"  key={difficulty}  disabled={isLoading} onClick={()=>{
+            generateQuestion(difficulty)
+        }} size="sm">{difficulty.charAt(0).toUpperCase()+difficulty.slice(1)}</Button>
       ))
      )}
     </div>
