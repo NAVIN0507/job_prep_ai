@@ -13,6 +13,8 @@ import {JobInfoTable, questionsDifficulties, QusetionDeficulties} from "@/drizzl
 import { useState } from "react";
 import {useCompletion} from "@ai-sdk/react"
 import {errorToast} from "@/lib/errortoast";
+import {useMemo} from "react";
+import z from "zod"
 type Status  = "awaiting-answer" | "awaiting-defficulties" | "init"
 
 export function NewQuetionsClientPage({
@@ -22,8 +24,7 @@ export function NewQuetionsClientPage({
 }) {
   const [status, setstatus] = useState<Status>("init");
   const [ answer, setAnswer ] = useState<string | null>(null)
-    const questionId  = null
-  const {complete:generateQuestion , completion:question , setCompletion:setQuestion , isLoading:isGeneratingQuestion }  = useCompletion({
+  const {complete:generateQuestion , completion:question , setCompletion:setQuestion , isLoading:isGeneratingQuestion  , data}  = useCompletion({
       api:"/api/ai/questions/generate-question",
       onFinish:()=> {
           setstatus("awaiting-answer")
@@ -32,8 +33,10 @@ export function NewQuetionsClientPage({
           errorToast(error.message)
       }
   })
-    const {complete:generateFeedback , completion:feedback , setCompletion:setFeedback , isLoading:isGeneratingFeddback }  = useCompletion({
-        api:"/api/ai/questions/generate-feedback",
+    console.log(jobInfo.id)
+    console.log(question)
+    const {complete:generateFeedback , completion:feedback , setCompletion:setFeedback , isLoading:isGeneratingFeddback  }  = useCompletion({
+        api:"/api/ai/feedback/generate-feedback",
         onFinish:()=> {
             setstatus("awaiting-defficulties")
         },
@@ -41,7 +44,19 @@ export function NewQuetionsClientPage({
             errorToast(error.message)
         }
     })
-  return (
+    console.log(data)
+    const questionId = useMemo(() => {
+        const item = data?.at(-1)
+        if (item == null) return null
+        const parsed = z.object({ questionId: z.string() }).safeParse(item)
+        if (!parsed.success) return null
+
+        return parsed.data.questionId
+    }, [data])
+
+    console.log(questionId)
+
+    return (
     <div className="flex flex-col h-[calc(100vh-4rem)]">
       <div className="container flex gap-4 py-4 items-center justify-between">
         <div className="flex-grow basis-0">
@@ -64,7 +79,7 @@ export function NewQuetionsClientPage({
             setQuestion("")
             setstatus("init")
         }}
-                   disableAnswerButton={answer==null || answer.trim()==null || questionId==null}
+                   disableAnswerButton={answer==null || answer.trim()==null }
         />
         <div className="flex-grow hidden md:block" />
       </div>
@@ -122,9 +137,11 @@ function QuestionContainer(
 <>
 <ResizableHandle withHandle />
            <ResizablePanel id="feedback" defaultSize={75} minSize={5}>
+               <ScrollArea className="h-full min-w-48 *:h-full">
                   <MarkdownRenderer className="p-6">
                     {feedback}
                   </MarkdownRenderer>
+               </ScrollArea>
            </ResizablePanel>
            </>
           )}

@@ -16,7 +16,7 @@ export const QuestionsTable =  pgTable("questions" , {
 })
 
 export const questionsRelations  =relations(QuestionsTable , ({one})=>({
-  user:one(JobInfoTable , {
+  jobInfo:one(JobInfoTable , {
     fields:[QuestionsTable.jobInfoId],
     references:[JobInfoTable.id]    
   })
