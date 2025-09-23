@@ -20,7 +20,6 @@ export const env = createEnv({
       const {DB_HOST , DB_NAME , DB_PORT , DB_PASSWORD , DB_USER  , ...rest}   = val;
       return{
         ...rest,
-        DATABASE_URL:'postgresql://neondb_owner:npg_KNJuGyIhp4j1@ep-bold-cell-advrekbx-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
       }
     })
   },
