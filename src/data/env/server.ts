@@ -12,14 +12,15 @@ export const env = createEnv({
     CLERK_SECRET_KEY: z.string().min(1, "CLERK_SECRET_KEY is required"),
     HUME_API_KEY:z.string().min(1 , "HUME_API_KEY"),
     HUME_SECRET_KEY:z.string().min(1 , "HUME_SECRET_KEY"),
-    GEMINI_API_KEY:z.string().min(1 , "Gemini key required")
+    GEMINI_API_KEY:z.string().min(1 , "Gemini key required"),
+    NEONDB_URL:z.string().min(1 , "DB required")
   },
   createFinalSchema:env=>{
     return z.object(env).transform(val=>{
       const {DB_HOST , DB_NAME , DB_PORT , DB_PASSWORD , DB_USER  , ...rest}   = val;
       return{
         ...rest,
-        DATABASE_URL:`postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`
+        DATABASE_URL:'postgresql://neondb_owner:npg_KNJuGyIhp4j1@ep-bold-cell-advrekbx-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
       }
     })
   },

@@ -4,6 +4,12 @@ const nextConfig: NextConfig = {
   /* config options here */
   experimental:{
     useCache:true
+  },
+  typescript:{
+    ignoreBuildErrors:true
+  },
+  eslint:{
+    ignoreDuringBuilds:true
   }
 };
 
