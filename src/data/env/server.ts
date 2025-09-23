@@ -19,7 +19,7 @@ export const env = createEnv({
     return z.object(env).transform(val=>{
       const {DB_HOST , DB_NAME , DB_PORT , DB_PASSWORD , DB_USER  , ...rest}   = val;
       return{
-        ...rest,
+        ...rest
       }
     })
   },
