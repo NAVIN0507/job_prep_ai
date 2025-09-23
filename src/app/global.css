@@ -3,7 +3,7 @@
 
 @import "tw-animate-css";
 /* Removed @plugin "@tailwindcss/typography" - configure plugins in tailwind.config.js */
-@custom-variant dark (&:is(.dark *))
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
