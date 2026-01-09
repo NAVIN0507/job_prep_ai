@@ -3,4 +3,3 @@ import { env } from '@/data/env/server';
 import * as schema from './schema';
 
 export const db = drizzle(env.NEONDB_URL , {schema})
-
